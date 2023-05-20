@@ -47,17 +47,22 @@ func load_setting() {
 }
 
 func main() {
+	shutdown_running := false
 	load_setting()
 	for {
 		now := time.Now()
 		now_temp := 60*now.Hour() + now.Minute()
-		if start_time > end_time {
-			if start_time <= now_temp || now_temp <= end_time {
-				exec.Command("shutdown", "/s", "/f").Run()
-			}
-		} else {
-			if start_time <= now_temp && now_temp <= end_time {
-				exec.Command("shutdown", "/s", "/f").Run()
+		if !shutdown_running {
+			if start_time > end_time {
+				if start_time <= now_temp || now_temp <= end_time {
+					exec.Command("shutdown", "/s", "/f").Run()
+					shutdown_running = true
+				}
+			} else {
+				if start_time <= now_temp && now_temp <= end_time {
+					exec.Command("shutdown", "/s", "/f").Run()
+					shutdown_running = true
+				}
 			}
 		}
 		time.Sleep(time.Millisecond * 500)
