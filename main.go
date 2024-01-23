@@ -38,7 +38,7 @@ var setting Setting_t
 
 var weeks_map = map[string]time.Weekday{
 	"Mon": time.Monday,
-	"Tue": time.Thursday,
+	"Tue": time.Tuesday,
 	"Wed": time.Wednesday,
 	"Thu": time.Thursday,
 	"Fri": time.Friday,
