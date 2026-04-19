@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
-
+	"runtime"
 	"gopkg.in/yaml.v3"
 )
 
@@ -46,39 +46,73 @@ var weeks_map = map[string]time.Weekday{
 	"Sun": time.Sunday,
 }
 
-/*
-func load_setting() {
-	RunPath, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	RunDirPath := filepath.Dir(RunPath)
 
-	f, err := os.Open(filepath.Join(RunDirPath, "setting.lua"))
-	if err != nil {
-		log.Fatalln("setting.lua does not exist.")
-	}
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
+func get_HOME_path()string{
+	switch runtime.GOOS {
+	case "windows":
+		home := os.Getenv("USERPROFILE")
+		if home != "" {
+			return home
+		}
+		return os.Getenv("HOME")
 
-	scanner.Scan()
-	setting_str = scanner.Text()
+	default:
+		// Linux,macOS
+		home := os.Getenv("HOME")
+		if home != "" {
+			return home
+		}
+		return os.Getenv("USERPROFILE")
+	}
 }
-*/
 
-func load_setting() {
+func generate_setting_path1()string{
+	home_path:=get_HOME_path()
+	return filepath.Join(home_path, ".Do-not-use-PC.yaml")
+}
+
+func generate_setting_path2()string{
 	RunPath, err := os.Executable()
 	if err != nil {
 		panic(err)
 	}
 	RunDirPath := filepath.Dir(RunPath)
 
-	setting_str, err := ioutil.ReadFile(filepath.Join(RunDirPath, "setting.yaml"))
+	return filepath.Join(RunDirPath, "setting.yaml")
+}
+
+func poweroff(){
+	switch runtime.GOOS {
+	case "windows":
+		exec.Command("shutdown", "/s", "/f").Run()
+	case "linux":
+		exec.Command("systemctl", "poweroff").Run()
+	default:
+		panic("Not supporting OS")	
+	}
+}
+func load_setting() {
+	path1:=generate_setting_path1()
+	path2:=generate_setting_path2()
+	path:=""
+
+	_, err := os.Stat(path1)
+	if err == nil {
+		path=path1	
+	}else{
+		_, err := os.Stat(path2)
+		if err == nil {
+			path=path2
+		}else{
+			panic("Noting setting file.")
+		}
+	}
+
+	setting_str, err := ioutil.ReadFile(path)
+
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	//fmt.Println(setting_str)
 
 	err = yaml.Unmarshal([]byte(setting_str), &setting)
 
@@ -150,7 +184,7 @@ func main() {
 					}
 				} else {
 					if start_time1 <= now_temp && now_temp <= end_time1 {
-						exec.Command("shutdown", "/s", "/f").Run()
+						poweroff()
 						shutdown_running = true
 					}
 				}
