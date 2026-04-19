@@ -13,13 +13,40 @@
 現在、Windowsのみで動作します。   
 
 ## 🔽インストール
+### Windows
 ```
 git clone https://github.com/PenguinCabinet/Do-not-use-PC-CLI
 cd Do-not-use-PC-CLI
 go build -ldflags -H=windowsgui
 New-Item setting.yaml
 ```
-setting.yamlにPCを使用できる時間帯を指定してください。   
+Windowsの起動と同時に実行するアプリとして、タスクスケジューラにDo-not-use-PC-CLI.exeを追加してください。
+### Linux
+```
+go install PenguinCabinet/Do-not-use-PC-CLI@latest
+```
+`~/.config/systemd/user/Do-not-use-PC.service`を作成します。ただし、<username>は各自のユーザ名に置き換えてください
+```
+[Unit]
+Description=Do-not-use-PC Service
+
+[Service]
+Type=simple
+ExecStart=/home/<username>/go/bin/Do-not-use-PC-CLI
+WorkingDirectory=/home/<username>/go/bin/
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+```
+その後、下記のコマンドを実行します。ただし、<username>は各自のユーザ名で置き換えてください
+```
+loginctl enable-linger <username>
+```
+
+### 初期設定
+`setting.yaml`もしくは`$HOME/.Do-not-use-PC.yaml`にPCを使用できる時間帯を指定してください。   
 
 例:   
 * 水曜日以外では、8:00から12:00、14:00から20:00の間、パソコンを使用できるようにします。(それ以外の時間帯はパソコンを使用できません)   
@@ -66,4 +93,3 @@ rules:
             minutes: 0
 ```
 
-Windowsの起動と同時に実行するアプリとして、タスクスケジューラにDo-not-use-PC-CLI.exeを追加してください。
