@@ -84,9 +84,15 @@ func generate_setting_path2()string{
 func poweroff(){
 	switch runtime.GOOS {
 	case "windows":
-		exec.Command("shutdown", "/s", "/f").Run()
+		err:=exec.Command("shutdown", "/s", "/f").Run()
+		if err!=nil{
+			panic(err)
+		}
 	case "linux":
-		exec.Command("systemctl", "poweroff").Run()
+		err:=exec.Command("systemctl", "poweroff").Run()
+		if err!=nil{
+			panic(err)
+		}
 	default:
 		panic("Not supporting OS")	
 	}
