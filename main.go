@@ -158,8 +158,8 @@ func main() {
 					for _, e2 := range e.If.Weeks {
 						if e2 == "All" || now.Weekday() == weeks_map[e2] {
 							if dofunc() {
-								//fmt.Println("shutdown!!!")
-								exec.Command("shutdown", "/s", "/f").Run()
+								poweroff()
+
 								shutdown_running = true
 								return
 							}
@@ -169,32 +169,6 @@ func main() {
 			})()
 
 		}
-		/*
-			if now.Weekday() == time.Saturday {
-				if start_time2 > end_time2 {
-					if start_time2 <= now_temp || now_temp <= end_time2 {
-						exec.Command("shutdown", "/s", "/f").Run()
-						shutdown_running = true
-					}
-				} else {
-					if start_time2 <= now_temp && now_temp <= end_time2 {
-						exec.Command("shutdown", "/s", "/f").Run()
-						shutdown_running = true
-					}
-				}
-			} else {
-				if start_time1 > end_time1 {
-					if start_time1 <= now_temp || now_temp <= end_time1 {
-						exec.Command("shutdown", "/s", "/f").Run()
-						shutdown_running = true
-					}
-				} else {
-					if start_time1 <= now_temp && now_temp <= end_time1 {
-						poweroff()
-						shutdown_running = true
-					}
-				}
-			}*/
 		time.Sleep(time.Millisecond * 500)
 	}
 }
